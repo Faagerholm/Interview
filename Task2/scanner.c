@@ -6,7 +6,6 @@
 #include <netinet/in.h>
 #include <netinet/if_ether.h>
 #include <string.h>
-#include <unistd.h> // Standard symbolics constants and types
 #include <getopt.h> // For long options like -interface and -help.
 #include <errno.h> // For better error messages
 
@@ -137,7 +136,7 @@ void packet_handler(u_char *args, const struct pcap_pkthdr *packet_header, const
 	char t_buffer[26];
 	struct tm* tm_info = localtime(&(packet_header->ts.tv_sec));
 
-	strftime(t_buffer, 26, "%T", tm_info);
+	strftime(t_buffer, 26, "%F %T", tm_info);
 
 	signed int rssiDbm = rssi[0] - 256; // Convert rssi to human readable value.
 	/*
