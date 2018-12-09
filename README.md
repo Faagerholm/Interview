@@ -32,7 +32,7 @@ Displays requests of nerby wireless devices.
 #### Task 1  
 Task1 is completed with a single scanner.c file.
 The file can be compiled with **gcc -o Scanner scanner.c -lpcap**.
-If user want to specify different filters to be used to capture wireless traffic it should be done changing the filter definiting in filter_params.h. More information under [Filters](Filters).
+If user want to specify different filters to be used to capture wireless traffic it should be done changing the filter definiting in filter_params.h. More information under [Filters](README.md#filters).
 
 #### Task 2
 
@@ -40,7 +40,7 @@ Task2 have a very simple implementation of a json-builder that builds and handle
 
 Requires you to compile with **gcc -o Scanner scanner.c json-builder.c -lpcap**
 
-The API documentation can be found from the readme in the Task2 directory: [link]().
+The API documentation can be found from the readme in the Task2 directory: [link](Task2#api-documentation).  
 For demonstration purposes the json-builder prints the object instead of sending it over HTTP(s).
 
 #### Filters  
