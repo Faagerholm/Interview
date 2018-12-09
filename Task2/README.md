@@ -13,7 +13,11 @@
 |**POST**|/activate/      |Post a request to change device status. expected boolean   |{ "activate": true/false }  |
 
 ### Server
-`GET /active		get status of server. respons is boolean true/false.`  
+
+
+|Request  |URI            |Comment                                                    |Example/Variables          |
+|---      |---            |---                                                        |---                        |
+|**GET**|/active          |Get status of server. respons is boolean true/false.       |                           |
 
 #### Example
 
