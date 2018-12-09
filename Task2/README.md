@@ -19,6 +19,19 @@
 |---      |---            |---                                                        |---                        |
 |**GET**|/active          |Get status of server. respons is boolean true/false.       |                           |
 
+
+### Error codes
+Besides all *standard* HTTP status codes we would want to implement some messages to few other of them.
+
+|Code |Message                                          |
+|---  |---                                              |
+|---  |**Client**                                       |
+|406  | Not accepted, valid request?                    |
+|408  | Request Timeout, client might not be running.   |
+|---  |**Server**                                       |
+|501  | Not implemented, check documentation.           |
+|503  | Service not available. If server is busy.       |
+
 #### Example
 
 This is how the client "saves" the json objects now.
@@ -28,3 +41,7 @@ This is how the client "saves" the json objects now.
 { "timestamp":"%y-%m-%d HH:mm:ss", "rssi":"-XXX", "address":"xx:xx:xx:xx:xx:xx" }
 { "timestamp":"%y-%m-%d HH:mm:ss", "rssi":"-XXX", "address":"xx:xx:xx:xx:xx:xx" }
 ```
+
+* Timestamp: When probe was observed.
+* Rssi: Signal strength. [Resource on RSSI](https://www.metageek.com/training/resources/understanding-rssi.html).
+* address: MAC address of observed device.
