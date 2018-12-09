@@ -1,6 +1,6 @@
 
 
-#define JSON_BUFFER_SIZE 1024
+#define JSON_BUFFER_SIZE 256
 
 struct json_object{
 	char buffer[JSON_BUFFER_SIZE];
