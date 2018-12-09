@@ -21,6 +21,14 @@ Before compiling make sure you have lpcap library installed.
 
 ## Usage
 
+Accepts arguments -h and -i.
+
+```
+Displays requests of nerby wireless devices.
+-i [interface]  Select which interface to monitor.
+-h              Display help message.
+```
+
 #### Task 1  
 Task1 is completed with a single scanner.c file.
 The file can be compiled with **gcc -o Scanner scanner.c -lpcap**.
@@ -29,6 +37,8 @@ If user want to specify different filters to be used to capture wireless traffic
 #### Task 2
 
 Task2 have a very simple implementation of a json-builder that builds and handles the json objects from the recieved data.
+
+Requires you to compile with **gcc -o Scanner scanner.c json-builder.c -lpcap**
 
 The API documentation can be found from the readme in the Task2 directory: [link]().
 For demonstration purposes the json-builder prints the object instead of sending it over HTTP(s).
