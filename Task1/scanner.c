@@ -6,21 +6,27 @@
 #include <netinet/in.h>
 #include <netinet/if_ether.h>
 #include <string.h>
-#include <unistd.h> // Standard symbolics constants and types
 #include <getopt.h> // For long options like -interface and -help.
 #include <errno.h> // For better error messages
-#include <linux/kernel.h> // Needed for KERN_INFO (printk) 
 
 #include "./filter_params.h"
 
-#define PARAMS "hi:" //input params
-#define USAGE_MSG "Error, invalid options. Usage: -h or -i [interface]\n"
+#define PARAMS "hpi:" //input params
+
+#define USAGE_MSG "Error, invalid options. Usage: -h, -i [interface] or -p\n"
 #define HELP_MSG  "\nDisplays probe requests of nearby wifi devices.\n"\
 	"-i [interface] Which interface to monitor probe requests on.\n"\
-	"-h		Display this help message.\n"
+	"-h		Display this help message.\n"\
+	"-p		Enable output, prints all packages found."
 
+
+
+// 1 = True, everything else = False.
+#define True 1
+#define False !True
 
 static unsigned int packet_counter = 0;
+int enableOutput = False;
 
 void packet_handler(u_char *args, const struct pcap_pkthdr *header, const u_char *packet);
 
@@ -39,12 +45,16 @@ int main(int argc, char *argv[]){
 				device = optarg;
 				fprintf(stdout, "device selected....\n", argv[0]);
 				break;
+			case 'p':
+				enableOutput = True;
 			default:
 				fprintf(stderr, USAGE_MSG, argv[0]);
 				exit(EXIT_FAILURE);
 		}
 	}
-	//TODO: implement device lookup.
+
+	if(enableOutput == False) fprintf(stdout, "Output disabled, enable with argument -p");
+	
 
 	if(device == NULL) {
 		fprintf(stderr, "Could not open device %s\n",device, error_buffer);
@@ -64,8 +74,9 @@ int main(int argc, char *argv[]){
 		fprintf(stderr, "Could not open device %s: %s\n", device, error_buffer);
 		return 2;
 	}
+	// Set monitormode
 	if(pcap_can_set_rfmon(handle) == 1){
-		fprintf(stdout,"Setting %s to monitor mode.\n",device);
+		fprintf(stdout,"Enable monitor mode on %s.\n",device);
 		if(pcap_set_rfmon(handle, 1) == -1){
 			fprintf(stderr,"Unable to set monitor mode.\n");
 		}	
@@ -76,13 +87,12 @@ int main(int argc, char *argv[]){
 	 * More about filters from "man pcap-filter"
 	 *
 	 * */
-	//TODO: work on implementing right filter. beacon works but doesnt accept subtype probe-req
-	char *filter = FILTER_PARAMS; //Filter parameters from Project_parameters.h
+	char *filter = FILTER_PARAMS; //Filter parameters from filter_params.h
 	struct bpf_program fp;
 	bpf_u_int32 subnet_mask, ip;
 
 	if(pcap_lookupnet(device, &ip, &subnet_mask, error_buffer) == -1){
-		fprintf(stderr,"Error retrieving device information from: %s, using default values.\n",device);
+		fprintf(stderr,"Could not retrieve device information from: %s, using default values.\nError message: %s",device,error_buffer);
 		ip = 0;
 		subnet_mask = 0;
 	}
@@ -90,6 +100,7 @@ int main(int argc, char *argv[]){
 	if(pcap_compile(handle, &fp, filter, 0, ip)==-1){
 		fprintf(stderr,"Error compiling libpcap filter, %s\n", filter);
 	}
+
 	if(pcap_setfilter(handle, &fp)==-1){
 		fprintf(stderr,"Error setting libpcap filter %s\nError message: %s",filter, pcap_geterr(handle));
 
@@ -127,9 +138,9 @@ void packet_handler(u_char *args, const struct pcap_pkthdr *packet_header, const
 	if(packet[offset] == 0x80){ 
 	
 	/* Get information */
-	bssid = packet + 40; 	// Transmitter address can be found on offset 36
-				// AP MAC can be found on offset 40.
-	rssi = packet + 22; 	// Signal strength in hex value.
+	bssid = packet + offset + 10; 	// Transmitter address can be found on offset 34
+	//assid = packet + offset +  16	// AP MAC can be found on offset 40.
+	rssi = packet + 22; 		// Signal strength in hex value.
 
 
 	/* Get local time */
@@ -139,17 +150,18 @@ void packet_handler(u_char *args, const struct pcap_pkthdr *packet_header, const
 	strftime(t_buffer, 26, "%T", tm_info);
 
 	signed int rssiDbm = rssi[0] - 256; // Convert rssi to human readable value.
-	fprintf(stdout, "ID:%i\t",packet_counter++);
-	fprintf(stdout, "%s\t",t_buffer);
-	fprintf(stdout, "%ddBm", rssiDbm);
-	fprintf(stdout, " %02x:%02x:%02x:%02x:%02x:%02x\n",
-			bssid[0],
-			bssid[1],
-			bssid[2],
-			bssid[3],
-			bssid[4],
-			bssid[5]);
+	if(enableOutput == True){
+		fprintf(stdout, "ID:%i\t",packet_counter++);
+		fprintf(stdout, "%s\t",t_buffer);
+		fprintf(stdout, "%ddBm", rssiDbm);
+		fprintf(stdout, " %02x:%02x:%02x:%02x:%02x:%02x\n",
+				bssid[0],
+				bssid[1],
+				bssid[2],
+				bssid[3],
+				bssid[4],
+				bssid[5]);
+		}
 	}
-
 	return;
 }
