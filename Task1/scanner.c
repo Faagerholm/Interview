@@ -93,7 +93,7 @@ int main(int argc, char *argv[]){
 	bpf_u_int32 subnet_mask, ip;
 
 	if(pcap_lookupnet(device, &ip, &subnet_mask, error_buffer) == -1){
-		fprintf(stderr,"Could not retrieve device information from: %s, using default values.\nError message: %s",device,error_buffer);
+		fprintf(stderr,"Could not retrieve device information from: %s, using default values.\nError message: %s\n",device,error_buffer);
 		ip = 0;
 		subnet_mask = 0;
 	}
@@ -135,13 +135,12 @@ void packet_handler(u_char *args, const struct pcap_pkthdr *packet_header, const
 
 	// Size of radiotap header. On raspberry it's 24 bytes.
 	offset = rtaphdr->it_len;
-
 	if(packet[offset] == 0x80){ 
 	
 	/* Get information */
 	bssid = packet + offset + 10; 	// Transmitter address can be found on offset 34
 	//assid = packet + offset +  16	// AP MAC can be found on offset 40.
-	rssi = packet + 22; 		// Signal strength in hex value.
+	rssi = packet + offset - 2; 		// Signal strength in hex value.
 
 
 	/* Get local time */

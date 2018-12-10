@@ -142,7 +142,7 @@ void packet_handler(u_char *args, const struct pcap_pkthdr *packet_header, const
 	/* Get information */
 	bssid = packet + offset + 10; 	// Transmitter address can be found on offset 34
 	//assid = packet + offset +  16	// AP MAC can be found on offset 40.
-	rssi = packet + 22; 		// Signal strength in hex value.
+	rssi = packet + offset - 2; 	// Signal strength in hex value.
 
 
 	/* Get local time */
@@ -155,7 +155,7 @@ void packet_handler(u_char *args, const struct pcap_pkthdr *packet_header, const
 	char address_str[17];
     sprintf(address_str, "%02x:%02x:%02x:%02x:%02x:%02x", bssid[0], bssid[1], bssid[2], bssid[3], bssid[4], bssid[5]);
     char rssi_str[4]; //rssi range from -26 to -100.
-    sprintf(rssi_str, "%d", rssiDbm);
+    sprintf(rssi_str, "%ld", rssiDbm);
     struct json_object object;
     json_object_init(&object);
     json_object_add_object(&object, "timestamp", t_buffer);
