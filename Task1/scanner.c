@@ -13,12 +13,11 @@
 
 #define PARAMS "hpi:" //input params
 
-#define USAGE_MSG "Error, invalid options. Usage: -h, -i [interface] or -p\n"
-#define HELP_MSG  "\nDisplays probe requests of nearby wifi devices.\n"\
+#define USAGE_MSG "Error, invalid options. Usage: -h, -i [interface] or -p.\n"
+#define HELP_MSG "\nDisplays probe requests of nearby wifi devices.\n"\
 	"-i [interface] Which interface to monitor probe requests on.\n"\
 	"-h		Display this help message.\n"\
 	"-p		Enable output, prints all packages found."
-
 
 
 // 1 = True, everything else = False.
@@ -39,25 +38,27 @@ int main(int argc, char *argv[]){
 	while((option = getopt(argc, argv, PARAMS)) != -1) {
 		switch(option) {
 			case 'h':
-				fprintf(stdout, HELP_MSG, argv[0]);
+				fprintf(stdout, HELP_MSG);
 				exit(EXIT_SUCCESS);
 			case 'i':		
 				device = optarg;
-				fprintf(stdout, "device selected....\n", argv[0]);
+				fprintf(stdout, "device selected....\n");
 				break;
 			case 'p':
 				enableOutput = True;
-			default:
-				fprintf(stderr, USAGE_MSG, argv[0]);
+			    fprintf(stdout,"Output enabled\n");
+                break;
+            default:
+				fprintf(stderr, USAGE_MSG);
 				exit(EXIT_FAILURE);
 		}
 	}
 
-	if(enableOutput == False) fprintf(stdout, "Output disabled, enable with argument -p");
+	if(enableOutput == False) fprintf(stdout, "Output disabled, enable with argument -p\n");
 	
 
 	if(device == NULL) {
-		fprintf(stderr, "Could not open device %s\n",device, error_buffer);
+		fprintf(stderr, "Could not open device %s:%s\n",device, error_buffer);
 		return 1;
 	}
 
@@ -98,16 +99,16 @@ int main(int argc, char *argv[]){
 	}
 
 	if(pcap_compile(handle, &fp, filter, 0, ip)==-1){
-		fprintf(stderr,"Error compiling libpcap filter, %s\n", filter);
+		fprintf(stderr,"Error compiling libpcap filter: \"%s\"\n", filter);
 	}
 
 	if(pcap_setfilter(handle, &fp)==-1){
-		fprintf(stderr,"Error setting libpcap filter %s\nError message: %s",filter, pcap_geterr(handle));
+		fprintf(stderr,"Error setting libpcap filter \"%s\"\nError message: %s\n",filter, pcap_geterr(handle));
 
 	}
 	
 	/* Set immediate mode */
-	if(pcap_set_immediate_mode(handle,1) == -1) fprintf(stderr,"Could not set immediate mode.\n", error_buffer);
+	if(pcap_set_immediate_mode(handle,1) == -1) fprintf(stderr,"Could not set immediate mode.\nError message:%s\n", error_buffer);
 	
 
 	
@@ -125,8 +126,8 @@ void packet_handler(u_char *args, const struct pcap_pkthdr *packet_header, const
 	};
 
 	const u_char *assid; // AP MAC address
-	const u_char *bssid; //transmitter MAC address
-	const u_char *rssi; //received signal strength
+	const u_char *bssid; // transmitter MAC address
+	const u_char *rssi; // received signal strength
 	
 	int offset = 0;
 	struct radiotap_header *rtaphdr;
@@ -147,7 +148,7 @@ void packet_handler(u_char *args, const struct pcap_pkthdr *packet_header, const
 	char t_buffer[26];
 	struct tm* tm_info = localtime(&(packet_header->ts.tv_sec));
 
-	strftime(t_buffer, 26, "%T", tm_info);
+	strftime(t_buffer, 26, "%F %T", tm_info);
 
 	signed int rssiDbm = rssi[0] - 256; // Convert rssi to human readable value.
 	if(enableOutput == True){
