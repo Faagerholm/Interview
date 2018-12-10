@@ -94,7 +94,7 @@ int main(int argc, char *argv[]){
 	bpf_u_int32 subnet_mask, ip;
 
 	if(pcap_lookupnet(device, &ip, &subnet_mask, error_buffer) == -1){
-		fprintf(stderr,"Could not retrieve device information from: %s, using default values.\nError message: %s",device,error_buffer);
+		fprintf(stderr,"Could not retrieve device information from: %s, using default values.\nError message: %s\n",device,error_buffer);
 		ip = 0;
 		subnet_mask = 0;
 	}
@@ -155,7 +155,7 @@ void packet_handler(u_char *args, const struct pcap_pkthdr *packet_header, const
 	char address_str[17];
     sprintf(address_str, "%02x:%02x:%02x:%02x:%02x:%02x", bssid[0], bssid[1], bssid[2], bssid[3], bssid[4], bssid[5]);
     char rssi_str[4]; //rssi range from -26 to -100.
-    sprintf(rssi_str, "%ld", rssiDbm);
+    sprintf(rssi_str, "%d", rssiDbm);
     struct json_object object;
     json_object_init(&object);
     json_object_add_object(&object, "timestamp", t_buffer);
