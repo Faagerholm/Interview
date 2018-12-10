@@ -21,12 +21,13 @@ Before compiling make sure you have lpcap library installed.
 
 ## Usage
 
-Accepts arguments -h and -i.
+Accepts arguments -h, -i and -p.
 
 ```
 Displays requests of nerby wireless devices.
 -i [interface]  Select which interface to monitor.
 -h              Display help message.
+-p              Print output to standard output stream. (for demo purposes, Task2 will print all json objects.)
 ```
 
 #### Task 1  
