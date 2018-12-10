@@ -18,6 +18,7 @@
 |Request  |URI            |Comment                                                    |Example/Variables          |
 |---      |---            |---                                                        |---                        |
 |**GET**|/active          |Get status of server. respons is boolean true/false.       |                           |
+|**POST**|/updates        |With webhook, let the server know new data is available.   |                           |
 
 
 ### Error codes
